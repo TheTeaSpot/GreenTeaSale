@@ -1,0 +1,6 @@
+
+{%- if layout == 'theme' -%}
+<link rel="preload" type="text/css" href="{{ 'layout.theme.css' | asset_url }}" as="style" onload="this.rel='stylesheet'">
+{%- else -%}
+<link rel="preload" href="{{ 'layout.theme.css' | asset_url }}" as="style" onload="this.rel='stylesheet'">
+{%- endif -%}

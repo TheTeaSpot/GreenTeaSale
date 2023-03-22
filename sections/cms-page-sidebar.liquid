@@ -1,0 +1,25 @@
+{% assign sidebar_linklist = section.settings.sidebar_menu %}
+
+<ul class="sidebar-nav">
+  {%- for link in linklists[sidebar_linklist].links -%}
+    <li class="sidebar-nav__item">
+      <a href="{{ link.url }}">
+        {{ link.title | escape }}
+      </a>
+    </li>
+  {%- endfor -%}
+</ul>
+
+
+{% schema %}
+{
+  "name": "Sidebar Navigation",
+  "settings": [
+    {
+      "id": "sidebar_menu",
+      "type": "link_list",
+      "label": "Sidebar Menu"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,290 @@
+<style>
+
+.site-nav__childlist-item
+{
+  margin-bottom: 0 !important;
+}
+.site-nav__hover:hover
+{
+    border-bottom: 3px solid #E75D73;
+    margin-top: -3px;
+}
+
+.site-nav__childlist, .site-nav__dropdown {
+    background: white !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.site-bubble-content
+{
+  float: left;
+  width: 150px;
+  text-align: center !important;
+}
+
+.site-nav__childlist > ul > li
+{
+    min-width: 100px !important;
+    max-width: 120px !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.site-nav__childlist > ul > li:first-child
+{
+    min-width: 302px !important;
+    max-width: 50% !important;
+    flex-grow: 1 !important;
+    flex-shrink: 1 !important;
+}
+
+.site-nav__childlist > ul > li:last-child {
+    min-width: 40% !important;
+    max-width: 60% !important;
+    flex-grow: 1 !important;
+    flex-shrink: 0 !important;
+}
+
+.site-nav__childlist-grid
+{
+  justify-content: space-between;
+  flex-wrap: nowrap !important;
+  -webkit-flex-wrap: nowrap !important;
+  margin-top: -12px;
+}
+
+.site-nav__childlist
+{
+  width: 100%;
+  padding-bottom: 14px !important;
+  font-size: 12px;
+}
+
+.img-bubble
+{
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100px;
+}
+
+.site-nav__child-link > span.site-nav__label
+{
+  white-space: normal;
+}
+
+.border_right {   border-right: 0px solid black; }
+
+.site-bubble-content {
+    padding: 4px;
+}
+
+@media (max-width: 1100px) {
+  .img-bubble {
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 80px;
+  }
+
+  .site-bubble-content
+  {
+    float: left;
+    width: 120px;
+    text-align: center !important;
+  }
+
+  .site-nav__childlist > ul > li:first-child
+  {
+      min-width: 250px !important;
+      max-width: 70% !important;
+      flex-grow: 1 !important;
+      flex-shrink: 1 !important;
+  }
+
+  .site-nav__childlist > ul > li:last-child {
+      min-width: 40% !important;
+      max-width: 100% !important;
+      flex-grow: 1 !important;
+      flex-shrink: 0 !important;
+  }
+
+  .site-bubble-content > a
+  {
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 900px) {
+
+
+  .img-bubble {
+    display: none;
+  }
+
+  .site-bubble-content
+  {
+    float: none;
+    width: 100px;
+    text-align: left !important;
+    padding: 4px 15px 5px;
+  }
+
+  .site-nav__childlist > ul > li:first-child
+  {
+      min-width: 18% !important;
+      max-width: 20% !important;
+      flex-grow: 1 !important;
+      flex-shrink: 1 !important;
+  }
+
+  .site-nav__childlist > ul > li:last-child {
+      min-width: 40% !important;
+      max-width: 100% !important;
+      flex-grow: 1 !important;
+      flex-shrink: 0 !important;
+  }
+
+  .site-bubble-content > a
+  {
+    padding: 0 !important;
+  }
+}
+
+
+</style>
+<ul class="site-nav list--inline {{ nav_alignment }}" id="SiteNav">
+  {% for link in linklists[section.settings.main_linklist].links %}
+  {% assign isTail = 0 %}
+    {%- capture navItemIndex %}{% increment index %}{% endcapture -%}
+
+    {%- assign child_list_handle = link.title | handleize -%}
+
+    {% comment %}
+      Check if third-level nav exists on each parent link.
+    {% endcomment %}
+    {%- assign three_level_nav = false -%}
+    {% if link.links != blank %}
+      {% if link.levels == 2 %}
+        {%- assign three_level_nav = true -%}
+      {% endif %}
+    {% endif %}
+
+    {% if link.links != blank %}
+      <li class="site-nav--has-dropdown{% if three_level_nav %} site-nav--has-centered-dropdown{% endif %}{% if link.active %} site-nav--active{% endif %}" data-has-dropdowns>
+        <div class="site-nav__link site-nav__link--main {% if link.child_active %} site-nav__link--active{% endif %} site-nav__hover"
+             aria-expanded="false"
+             aria-controls="SiteNavLabel-{{ child_list_handle }}">
+             <a href="{{ link.url }}">{{ link.title | escape }}</a>
+        </div>
+
+        <div class="site-nav__dropdown{% if three_level_nav %} site-nav__dropdown--centered{% endif %}" id="SiteNavLabel-{{ child_list_handle }}" style="padding:0;">
+          {% if three_level_nav %}
+
+            <div class="site-nav__childlist">
+              <ul class="site-nav__childlist-grid">
+                {% if link.links != blank %}
+                  {% for childlink in link.links %}
+
+                    {% if isTail == 1%}
+                      {% if childlink.title == "_IMAGE" %}
+                        {%- assign image_url = childlink.links[0].title | upcase | replace: " ", "-" | replace: "&", "_" | replace: "%", "_" | append: ".png" -%}
+                        <li class="site-nav__childlist-item" style="cursor: pointer; background-image: url('{{ image_url | file_img_url: '600x' }}');margin-bottom:0;background-repeat: no-repeat; background-size: contain;min-height: 400px;background-position: right;" onclick="location.href='{{childlink.links[0].url}}';">
+                      {% else %}
+                        <li class="site-nav__childlist-item">
+                      {% endif %}
+                    {% else %}
+                    <li class="site-nav__childlist-item border_right">
+                    {% endif %}
+                      {% if childlink.url == "#" %}
+                      <div disabled="disabled"
+                        class="site-nav__link site-nav__child-link site-nav__child-link--parent"
+                        {% if childlink.current %} aria-current="page"{% endif %}>
+                        <span class="site-nav__label">
+                          {{ childlink.title | escape }}
+                        </span>
+                      </div>
+                      {% else %}
+                        {% if childlink.title != "_IMAGE" %}
+                        <a href="{{ childlink.url }}"
+                           class="site-nav__link site-nav__child-link site-nav__child-link--parent"
+                                {% if childlink.current %} aria-current="page"{% endif %}
+                        >
+                          <span class="site-nav__label">{{ childlink.title | escape }}</span>
+                        </a>
+                        {% endif %}
+                      {% endif %}
+
+                      {% if childlink.title != "_IMAGE" %}
+                      {% if childlink.links != blank %}
+                        <ul>
+
+                        {% for grandchildlink in childlink.links %}
+                        {% if isTail == 1%}
+                          <li>
+                            <a href="{{ grandchildlink.url }}"
+                            class="site-nav__link site-nav__child-link"
+                            {% if grandchildlink.current %} aria-current="page"{% endif %}
+                          >
+                              <span class="site-nav__label">{{ grandchildlink.title | escape }}</span>
+                            </a>
+                            {% else %}
+                              <li class="bubble">
+                              {%- assign image_url = grandchildlink.title | upcase | replace: " ", "-" | replace: "&", "_" | replace: "%", "_" | append: ".png" -%}
+                              <div class="site-bubble-content">
+                              <a href="{{ grandchildlink.url }}"
+                              class="site-nav__link site-nav__child-link"
+                              {% if grandchildlink.current %} aria-current="page"{% endif %}
+                              >
+
+                              <img class="site-nav__label img-bubble" src="{{ image_url | file_img_url: '128x128' }}" loading="lazy" onError="style.display='none'">
+
+                                <p class="site-nav__label">{{ grandchildlink.title | escape }}</p>
+                              </a>
+                              </div>
+
+                            {% endif %}
+                          </li>
+                        {% endfor %}
+                        {% assign isTail = 1 %}
+                        </ul>
+                      {% endif %}
+                      {% endif %}
+
+                    </li>
+                  {% endfor %}
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+
+          {% else %}
+            <ul>
+              {% for childlink in link.links %}
+                <li>
+                  <a href="{{ childlink.url }}"
+                  class="site-nav__link site-nav__child-link{% if forloop.last %} site-nav__link--last{% endif %}"
+                  {% if childlink.current %} aria-current="page"{% endif %}
+                >
+                    <span class="site-nav__label">{{ childlink.title | escape }}</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </li>
+    {% else %}
+      <li {% if link.active %} class="site-nav--active"{% endif %}>
+        <a href="{{ link.url }}"
+          class="site-nav__link site-nav__link--main{% if link.active %} site-nav__link--active{% endif %}"
+          {% if link.current %} aria-current="page"{% endif %}
+        >
+          <span class="site-nav__label">{{ link.title | escape }}</span>
+        </a>
+      </li>
+    {% endif %}
+
+  {% endfor %}
+</ul>

@@ -1,0 +1,33 @@
+{% if product.metafields['customAttributes']['steeping-temp'] and product.metafields['customAttributes']['steeping-guide-time'] and product.metafields['customAttributes']['steeping-amount'] %}
+  {%- assign steepingFooter = "per 8 oz. water" -%}
+  {%- if product.metafields['customAttributes']['steeping-footer'] -%}
+    {%- assign steepingFooter = product.metafields['customAttributes']['steeping-footer'] -%}
+  {% endif %}
+  <div class="steeping-guide">
+    <div class="steeping-guide__head">
+      Steeping Guide
+    </div>
+    <div class="steeping-guide__attribute-row">
+      <div class="steeping-guide__attribute">
+        <div class="value" itemprop="steep-amount">
+          {{ product.metafields['customAttributes']['steeping-amount'] | remove: '"' }}
+        </div>
+      </div>
+
+      <div class="steeping-guide__attribute">
+        <div class="value" itemprop="steep-temp">
+          {{ product.metafields['customAttributes']['steeping-temp'] | remove: '"' }}
+        </div>
+      </div>
+
+      <div class="steeping-guide__attribute">
+        <div class="value" itemprop="steep-time">
+          {{ product.metafields['customAttributes']['steeping-guide-time'] | remove: '"' }}
+        </div>
+      </div>
+    </div>
+    <div class="steeping-guide__foot">
+      {{ steepingFooter }}
+    </div>
+  </div>
+{% endif %}

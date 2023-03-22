@@ -1,0 +1,227 @@
+<div class="promotion-custom-content">
+    {% comment %}
+      Change product/variant ID from string to integer
+    {%- endcomment -%}
+    {%- assign freeSampleVariantId = section.settings.free-sample-variant-id | plus: 0 -%}
+    <script class="promotion-shared">
+      function createCookie(name, value, days) {
+        if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          var expires = "; expires=" + date.toGMTString();
+        } else var expires = "";
+        document.cookie = name + "=" + value + expires + "; path=/";
+      }
+
+      function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      }
+
+      function isDigitalProduct(addedProductId) {
+        let skipItems = [ {{ section.settings.promotion-skip-digital-items }} ];
+        let isDigitalItem = false;
+        for (var si=0; si < skipItems.length; si++) {
+          if ( addedProductId == skipItems[si] ) {
+            isDigitalItem = true;
+          }
+        }
+        return isDigitalItem;
+      }
+
+      function getFreeSampleVariantId() {
+        {% if section.settings.enable-auto-add-free-sample and freeSampleVariantId != 123456789101112 %}
+          let freeSampleVariantId = {{ freeSampleVariantId }};
+        {% else %}
+          let freeSampleVariantId = false;
+        {%  endif %}
+        return freeSampleVariantId;
+      }
+
+      function isFreeSampleInCart(items) {
+        let freeSampleVariantId = getFreeSampleVariantId();
+        let freeSampleInCart = false;
+        if (freeSampleVariantId !== false)
+          for(var i=0; i < items.length; i++){
+            if (items[i].id === {{ freeSampleVariantId }}) {
+              freeSampleInCart = true;
+            }
+          }
+        return freeSampleInCart;
+      }
+
+    </script>
+    {% if section.settings.enable-auto-add-free-sample and freeSampleVariantId != 123456789101112 %}
+        <div class="promotion-free-gift">
+            <script type="text/javascript">
+              document.addEventListener("DOMContentLoaded", function() {
+                jQuery('#wekjfwefwef').click(function (event){
+                  let addedProductId = jQuery(this.closest('form')).attr('data-productid');
+                  jQuery.ajaxSetup({async: false});
+                  jQuery.getJSON('/cart.js', function(cart) {
+                      let items = cart.items;
+                      if (isFreeSampleInCart(items) === false && isDigitalProduct(addedProductId) === false) {
+                        jQuery.post('/cart/add.js', {
+                          quantity: 1,
+                          id: {{ freeSampleVariantId }}
+                        });
+                      }
+                    }
+                  );
+                });
+              });
+            </script>
+        </div>
+    {%  endif %}
+  {%- include 'promotions-fgwp' with product, promo_settings: section.settings -%}</div>
+{% schema %}
+{
+  "name": "Free Samples & Promotions",
+  "settings": [
+    {
+      "id": "enable-auto-add-free-sample",
+      "type": "checkbox",
+      "label": "Enable automatic adding of free sample to cart",
+      "default": false
+    },
+    {
+      "id": "free-sample-variant-id",
+      "type": "text",
+      "label": "Auto free sample variant ID (Should match Shopify Script)",
+      "default": "123456789101112"
+    },
+    {
+      "id": "enable-spend-x-get-y-for-z",
+      "type": "checkbox",
+      "label": "Enable spend X to get Y for Z promotion",
+      "default": false
+    },
+    {
+      "id": "spend-x-get-y-for-z-title",
+      "type": "text",
+      "label": "The title for the promotion",
+      "default": "Buy over [threshold] and get Y for Z!"
+    },
+    {
+      "id": "spend-x-get-y-for-z-subtitle",
+      "type": "textarea",
+      "label": "The subtitle for the promotion",
+      "default": "Just for this month! Get Y for Z when buying over [threshold]"
+    },
+    {
+      "id": "spend-x-get-y-for-z-handle",
+      "type": "text",
+      "label": "Y Handle (Should match the product in Shopify Script)",
+      "default": "some-product-handle"
+    },
+    {
+      "id": "enable-spend-x-get-y-for-z-specific-variants",
+      "type": "checkbox",
+      "label": "Allow only specific variants of this product",
+      "default": false
+    },
+    {
+      "id": "spend-x-get-y-for-z-specific-variants",
+      "type": "text",
+      "label": "Comma separated list of the product variants ids allowed in promotion",
+      "default": "123456789101112"
+    },
+	{
+      "id": "require-product-purchased",
+      "type": "checkbox",
+      "label": "Require Specific Product Purchased",
+      "default": false
+    },
+    {
+      "id": "required-product",
+      "type": "product",
+      "label": "Product Required to Purchase to Trigger Promotion"
+    },
+    {
+      "id": "required-product-variants",
+      "type": "text",
+      "label": "Comma separated list of the product variants for required product"
+    },
+    {
+      "type": "number",
+      "id": "spend-x-get-y-for-z-threshold",
+      "label": "Spend X to get Y for Z - X threshold",
+      "default": 70,
+      "info": "The X amount at which customers receive Y in price Z"
+    },
+    {
+      "type": "number",
+      "id": "spend-x-get-y-for-z-discount",
+      "label": "Spend X to get Y for Z - Discount amount (percentage)",
+      "default": 100,
+      "info": "The discount amount for Y"
+    },
+    {
+      "id": "promotion-skip-digital-items",
+      "type": "text",
+      "label": "Product IDs that do not qualify for promotion (gift certificate)",
+      "default": "123456789101112"
+    },
+    {
+      "id": "enable-spend-x-get-y-cart-reminder",
+      "type": "checkbox",
+      "label": "Enable spend X to get Y for Z promotion Cart page reminder",
+      "default": true
+    },
+    {
+      "id": "enable-spend-x-get-y-cart-popup-on-checkout-click",
+      "type": "checkbox",
+      "label": "Open popup promotion in Cart page when user clicks checkout",
+      "default": false
+    },
+    {
+      "id": "spend-x-get-y-cart-reminder-box-color",
+      "type": "color",
+      "label": "Cart page reminder box color",
+      "default": "#FFC400"
+    },
+    {
+      "id": "spend-x-get-y-cart-reminder-box-border-color",
+      "type": "color",
+      "label": "Cart page reminder box border color",
+      "default": "#FFC400"
+    },
+    {
+      "id": "spend-x-get-y-cart-reminder-text-color",
+      "type": "color",
+      "label": "Cart page reminder text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable-recharge-automatic-discount",
+      "label": {
+        "en": "Enable Automatic ReChrage Discount Coupon"
+      },
+      "default": false
+    },
+    {
+      "id": "recharge-automatic-discount-code",
+      "type": "text",
+      "label": "The ReCharge Coupon Created",
+      "default": "FREE_TEA_SAMPLE"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .promotion-custom-content {
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+
+{% endjavascript %}

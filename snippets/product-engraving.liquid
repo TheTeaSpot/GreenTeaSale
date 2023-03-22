@@ -1,0 +1,25 @@
+{%- liquid
+  if product.options_by_name['Engraving Font'].selected_value == "No Engraving"
+    assign disabled = true
+  endif
+-%}
+
+<div class="engraving-wrapper{% if disabled %} hide{% endif %}">
+  <div class="product-form__item">
+    <label for="properties_engraving">Engraving</label>
+    <input
+      id="properties_engraving"
+      type="text"
+      name="properties[Engraving]"
+      title="1-3 uppercase letters (A-Z)"
+      placeholder="1-3 letters"
+      required
+      minlength=1
+      maxlength=3
+      pattern="^[A-Z]{1,3}$"
+      {% if disabled %} disabled{% endif %}
+    >
+  </div>
+</div>
+
+<script defer src="{{ 'product-engraving.js' | asset_url }}"></script>
